@@ -1,6 +1,8 @@
 from flask import request
 
 from app.libs.enums import ClientTypeEnum
+from app.libs.error_code import Success
+from app.libs.error_code import ClientTypeError
 from app.libs.redprint import Redprint
 from app.models.user import User
 from app.validators.forms import ClientForm, UserEmailForm
@@ -10,31 +12,24 @@ api = Redprint('client')
 
 @api.route('/register', methods=['POST'])
 def create_client():
-    # 注册
-    # 表单 json
-    # request json response json
-    data = request.json
-    form = ClientForm(data=data)
-    if form.validate():
-        # 很多种不同的客户端
-        # swith case
-        promise = {
-            ClientTypeEnum.USER_EMAIL: __register_by_email
-        }
+    # 我们可以接受定义的复杂，但是不能接受调用的复杂
+    # 定义是一次的 调用是会重复n次的
+    # 我们可以预知的异常 已知异常
+    # 我们完全没有意识到的异常 未知异常
+    # AOP
+    # 1/0
+    form = ClientForm().validate_for_api()
+    promise = {
+        ClientTypeEnum.USER_EMAIL: __register_by_email,
+    }
     promise[form.type.data]()
-    return 'success'
+    return Success()
 
 
 def __register_by_email():
-    # User.register_by_email(, form.account.data, form.secret.data)
-
-    data = request.json
-    form = UserEmailForm(data=data)
-    if form.validate():
-        User.register_by_email(
-            form.nickname.data,
-            form.account.data,
-            form.secret.data
-        )
-
-# HttpException
+    form = UserEmailForm().validate_for_api()
+    User.register_by_email(
+        form.nickname.data,
+        form.account.data,
+        form.secret.data
+    )
