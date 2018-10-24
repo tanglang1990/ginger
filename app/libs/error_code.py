@@ -8,6 +8,12 @@ class Success(APIException):
     error_code = 0
 
 
+class DeleteSuccess(Success):
+    # 204 状态码，返回之后不会带有body的内容
+    code = 202
+    error_code = -1
+
+
 class ClientTypeError(APIException):
     # 400 401(未授权，密码错误) 403(禁止访问，没有权限)  404
     # 500

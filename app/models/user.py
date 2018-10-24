@@ -1,3 +1,5 @@
+import datetime
+
 from sqlalchemy import Column, Integer, String, SmallInteger
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -19,6 +21,9 @@ class User(Base):
     @password.setter
     def password(self, raw):
         self._password = generate_password_hash(raw)
+
+    def keys(self):
+        return ['id', 'email', 'nickname', 'auth']
 
     @staticmethod
     def register_by_email(nickname, account, secret):

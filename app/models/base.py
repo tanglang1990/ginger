@@ -4,6 +4,8 @@ from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy as _SQLAlchemy, BaseQuery
 from sqlalchemy import Column, SmallInteger, Integer
 
+from app.libs.error_code import NotFound
+
 
 class SQLAlchemy(_SQLAlchemy):
     @contextmanager
@@ -20,6 +22,18 @@ class Query(BaseQuery):
     def filter_by(self, **kwargs):
         kwargs['status'] = 1
         return super(Query, self).filter_by(**kwargs)
+
+    def get_or_404(self, ident):
+        rv = self.get(ident)
+        if rv is None:
+            raise NotFound()
+        return rv
+
+    def first_or_404(self):
+        rv = self.first()
+        if rv is None:
+            raise NotFound()
+        return rv
 
 
 db = SQLAlchemy(query_class=Query)
@@ -50,3 +64,6 @@ class Base(db.Model):
             return datetime.fromtimestamp(self.create_time)
         else:
             return None
+
+    def __getitem__(self, item):
+        return getattr(self, item)
