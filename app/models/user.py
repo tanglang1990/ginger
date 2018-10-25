@@ -11,7 +11,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     email = Column(String(24), unique=True, nullable=False)
     nickname = Column(String(24), unique=True)
-    auth = Column(SmallInteger, default=1)  # 普通用户1 管理员2
+    auth = Column(SmallInteger, default=1)  # 普通用户1 管理员2 改为字符串
     _password = Column('password', String(100))
 
     @property
@@ -42,7 +42,8 @@ class User(Base):
 
         if not user.check_password(password):
             raise AuthFailed()
-        return {'uid': user.id}
+        scope = 'AdminScope' if user.auth == 2 else 'UserScope'
+        return {'uid': user.id, 'scope': scope}
 
     def check_password(self, raw):
         if not self._password:

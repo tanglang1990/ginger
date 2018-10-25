@@ -1,6 +1,6 @@
 from flask import jsonify, g
 
-from app.libs.error_code import NotFound, DeleteSuccess
+from app.libs.error_code import NotFound, DeleteSuccess, AuthFailed
 from app.libs.redprint import Redprint
 from app.libs.token_auth import auth
 from app.models.base import db
@@ -9,53 +9,30 @@ from app.models.user import User
 api = Redprint('user')
 
 
-class Ten:
-    name = 'ten'
-    age = 18
-
-    def __init__(self):
-        self.gender = 'male'
-
-    def keys(self):
-        return ['name', 'age']
-
-    def __getitem__(self, item):
-        return getattr(self, item)
-
-
 @api.route('/<int:uid>', methods=['GET'])
 @auth.login_required
-def get_user(uid):
+def super_get_user(uid):
     user = User.query.get_or_404(uid)
-    # r = {
-    #     'nickname': user.nickname,
-    #     'email': user.email,
-    # }
-    # 追求更好的写法
-    # 艺术 情怀
-    # 编程的思路 线性的 容易
-    # 抽象 很难
-    # 枯燥？码农
-    # 更好的写法，避免枯燥，让你有成就感
-    # 业务 RESTFULL api
-
-    # viewmodel
-    # 内部开发
-    # 1：普通用户 2： 管理员
-    # 前端人员会更方便
-    # user book
-
-    # restfull api
     return jsonify(user)
+
+
+@api.route('/<int:uid>', methods=['DELETE'])
+@auth.login_required
+def super_delete_user(uid):
+    # # 权限的本质 0 1
+    # is_admin = g.user.is_admin
+    # if not is_admin:
+    #     raise AuthFailed()
+    with db.auto_commit():
+        user = User.query.filter_by(id=uid).first_or_404()
+        user.delete()
+    return DeleteSuccess()
 
 
 @api.route('', methods=['DELETE'])
 @auth.login_required
 def delete_user():
-    # 1 1
-    # 2 2
     uid = g.user.uid
-    # g : 用来做数据传递的
     with db.auto_commit():
         user = User.query.filter_by(id=uid).first_or_404()
         user.delete()

@@ -16,6 +16,8 @@ class Redprint:
         for rule, endpoint, f, options in self.mound:
             if url_prefix is None:
                 url_prefix = '/' + self.name
-
+            # endpoint viefunc
+            # endpoint redprint:view_func
+            endpoint = self.name + ':' + endpoint
             rule = url_prefix + rule
             bp.add_url_rule(rule, endpoint, f, **options)

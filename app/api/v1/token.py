@@ -24,7 +24,7 @@ def get_token():
     identity = promise[form.type.data](
         form.account.data, form.secret.data)
     token = generate_auth_token(
-        identity['uid'], form.type.data, None, expiration)
+        identity['uid'], form.type.data, identity['scope'], expiration)
     t = {
         'token': token.decode('ascii')
     }
@@ -38,6 +38,7 @@ def generate_auth_token(uid, ac_type, scope=None,
     return s.dumps(
         {
             'uid': uid,
+            'scope': scope,
             'type': ac_type.value
         }
     )
