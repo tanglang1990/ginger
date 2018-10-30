@@ -67,3 +67,13 @@ class Base(db.Model):
 
     def __getitem__(self, item):
         return getattr(self, item)
+
+    def hide(self, *fields):
+        for field in fields:
+            self.fields.remove(field)
+        return self
+
+    def append(self, *fields):
+        for field in fields:
+            self.fields.append(field)
+        return self

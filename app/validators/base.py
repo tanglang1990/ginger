@@ -6,8 +6,9 @@ from app.libs.error_code import ParameterException
 
 class BaseForm(Form):
     def __init__(self):
-        data = request.json
-        super(BaseForm, self).__init__(data=data)
+        args = request.args.to_dict()
+        data = request.get_json(silent=True)  # 静默处理，有异常也没不会抛出
+        super(BaseForm, self).__init__(data=data, **args)
 
     def validate(self):
         # 定义一个父类有的方法，然后改造父类的方法

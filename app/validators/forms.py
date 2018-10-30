@@ -6,13 +6,12 @@ from app.models.user import User
 from app.validators.base import BaseForm as Form
 
 
-
 class ClientForm(Form):
     # 注册请求表单
     account = StringField(
         validators=[DataRequired(message='这个字段内容不能为空'), Length(
-        min=5, max=32
-    )])
+            min=5, max=32
+        )])
     secret = StringField()
     type = IntegerField(validators=[DataRequired()])
 
@@ -41,3 +40,11 @@ class UserEmailForm(ClientForm):
     def validate_account(self, value):
         if User.query.filter_by(email=value.data).first():
             raise ValidationError('该邮箱对应的用户已注册')
+
+
+class BookSearchForm(Form):
+    q = StringField(validators=[DataRequired()])
+
+
+class TokenForm(Form):
+    token = StringField(validators=[DataRequired()])
